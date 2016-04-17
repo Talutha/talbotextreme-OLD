@@ -4,6 +4,7 @@
   "description": "Just another Twitch bot!",
   "main": "app.js",
   "scripts": {
+    "watch": "./node_modules/.bin/mocha -w --reporter spec",
     "test": "./node_modules/.bin/mocha --reporter spec"
   },
   "repository": {
