@@ -129,7 +129,26 @@ describe('Altering Points', function() {
     var remPoints = dc.defaultCommands(moderator, removeThis, '#talutha', function(result) {
       expect(result).to.have.string('Removed ' + -(amount) + ' points from ' + person + '.');
       done();
-    })
-  })
+    });
+  });
 
 });
+
+describe('Lineup Game', function() {
+  var lineCommand = '!startaline 500 Line up here!'
+
+  it('does not allow regular users to start a line', function(done) {
+    var denyLine = dc.defaultCommands(user, lineCommand, '#talutha', function(result) {
+      expect(result).to.have.string('You must be a moderator to start a line.');
+      done();
+    });
+  });
+
+  it('allows a moderator to start a line', function(done) {
+    var startingLine = dc.defaultCommands(moderator, lineCommand, '#talutha', function(result) {
+      expect(result).to.have.string('Talutha has started a line for: Line up here! - !lineup for 500 points!');
+      done();
+    });
+  });
+
+})
