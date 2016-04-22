@@ -16,6 +16,21 @@ var moderator = {
   'message-type': 'chat'
 }
 
+var subUser = {
+  color: '#0000FF',
+  'display-name': 'Talutha',
+  emotes: null,
+  mod: false,
+  'room-id': '28368365',
+  subscriber: true,
+  turbo: false,
+  'user-id': '15213012',
+  'user-type': null,
+  'emotes-raw': null,
+  username: 'talutha',
+  'message-type': 'chat'
+}
+
 var user = {
   color: '#0000FF',
   'display-name': 'Talutha',
@@ -28,6 +43,21 @@ var user = {
   'user-type': null,
   'emotes-raw': null,
   username: 'talutha',
+  'message-type': 'chat'
+}
+
+var poorUser = {
+  color: '#0000FF',
+  'display-name': 'Raydawn',
+  emotes: null,
+  mod: false,
+  'room-id': '28368365',
+  subscriber: false,
+  turbo: false,
+  'user-id': '15213012',
+  'user-type': null,
+  'emotes-raw': null,
+  username: 'raydawn',
   'message-type': 'chat'
 }
 
@@ -106,9 +136,10 @@ describe("Command responses", function() {
 
 describe('Altering Points', function() {
 
-  var addThis = '!addpoints Talutha 500';
+  var addThis = '!addpoints Talutha 1000';
   var removeThis = '!addpoints Talutha -500';
-  var amount = 500;
+  var amount = 1000;
+  var remAmount = -500;
   var person = 'talutha';
 
   it('does not allow non-broadcasters to alter points', function(done) {
@@ -127,7 +158,7 @@ describe('Altering Points', function() {
 
   it('allows the broadcaster to remove points', function(done) {
     var remPoints = dc.defaultCommands(moderator, removeThis, '#talutha', function(result) {
-      expect(result).to.have.string('Removed ' + -(amount) + ' points from ' + person + '.');
+      expect(result).to.have.string('Removed ' + remAmount + ' points from ' + person + '.');
       done();
     });
   });
@@ -135,10 +166,13 @@ describe('Altering Points', function() {
 });
 
 describe('Lineup Game', function() {
-  var lineCommand = '!startaline 500 Line up here!'
+  var lu = require('../lib/lineup').lineUp;
+
+  var lineCommand = '!startaline 500 Line up here!';
+  var lineUpCommand = '!lineup';
 
   it('does not allow regular users to start a line', function(done) {
-    var denyLine = dc.defaultCommands(user, lineCommand, '#talutha', function(result) {
+    var denyLine = dc.defaultCommands(poorUser, lineCommand, '#talutha', function(result) {
       expect(result).to.have.string('You must be a moderator to start a line.');
       done();
     });
@@ -150,5 +184,35 @@ describe('Lineup Game', function() {
       done();
     });
   });
+
+  it('does not allow a line to be started when one is in progress', function(done) {
+    var secondLine = dc.defaultCommands(moderator, lineCommand, '#talutha', function(result) {
+      expect(result).to.have.string('A line has already been started.');
+      done();
+    });
+  });
+
+  it('does not allow someone to line up if they do not have enough points', function(done) {
+    var denyLine = dc.defaultCommands(poorUser, lineUpCommand, '#talutha', function(result) {
+      expect(result).to.have.string('Raydawn, you do not have enough points to line up.');
+      done();
+    });
+  });
+
+  it('adds a non subscriber once to the line', function() {
+    var oneLine = lu.lineUp('nonsub', false);
+    expect(lu.inLine).to.deep.equal(['nonsub']);
+  });
+
+  it('adds a subscriber twice to the line', function() {
+    var twoLine = lu.lineUp('talutha', true);
+    expect(lu.inLine).to.deep.equal(['nonsub', 'talutha', 'talutha']);
+  });
+
+  it('does not allow people to line up multiple times', function() {
+    var multipleLine = lu.lineUp('talutha', true);
+    expect(lu.inLine).to.deep.equal(['nonsub', 'talutha', 'talutha']);
+    expect(multipleLine).to.have.string('duplicated');
+  })
 
 })
