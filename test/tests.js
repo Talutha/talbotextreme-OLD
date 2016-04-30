@@ -213,6 +213,15 @@ describe('Lineup Game', function() {
     var multipleLine = lu.lineUp('talutha', true);
     expect(lu.inLine).to.deep.equal(['nonsub', 'talutha', 'talutha']);
     expect(multipleLine).to.have.string('duplicated');
-  })
+  });
+
+  it('selects a random person from the line and returns it', function() {
+    var selectWinner = lu.select();
+    expect(selectWinner).to.be.a('string');
+  });
+
+  it('removes winner from the line', function() {
+    expect(lu.inLine.length).to.be.below(3);
+  });
 
 })
