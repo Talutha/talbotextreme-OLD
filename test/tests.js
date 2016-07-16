@@ -66,7 +66,15 @@ describe('Parsing Chat', function() {
       defCom.restore();
       sinon.assert.calledWith(defCom, channel, user, message);
     });
-    it('sends all other commands to checkDBFor()');
+    it('sends all other commands to checkDBFor()', function() {
+      let message = ['!notADefaultCommand'];
+      let check = sinon.stub(chat, 'checkDBFor');
+
+      chat.checkForCommand(channel, user, message);
+
+      check.restore();
+      sinon.assert.calledWith(check, channel, user, message);
+    });
   });
 
 });

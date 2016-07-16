@@ -1,7 +1,15 @@
-var tmi = require('./lib/connect').client;
-var chat = require('./lib/chat');
+/*jslint node: true */
+/*jslint esversion: 6 */
+'use strict';
 
-tmi.connect();
+const tmi = require('./lib/connect').client;
+const chat = require('./lib/chat');
+const config = require('./lib/config');
+
+config.checkForConfig('./config/', 'config.json')
+      .then(tmi.connect());
+
+// tmi.connect();
 
 tmi.on('chat', function(channel, user, message, self) {
   // Self returns BOOLEAN if chatter is the same as the bot
