@@ -9,8 +9,6 @@ const config = require('./lib/config');
 config.checkForConfig('./config/', 'config.json')
       .then(tmi.connect());
 
-// tmi.connect();
-
 tmi.on('chat', function(channel, user, message, self) {
   // Self returns BOOLEAN if chatter is the same as the bot
   // Channel returns #channel-name
