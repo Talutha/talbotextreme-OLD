@@ -25,5 +25,5 @@ tmi.on('chat', function(channel, user, message, self) {
          "username":"talutha",
          "message-type":"chat"}
   */
-  chat.chatTest(tmi, channel, user, message, self);
+  chat.parseChat(tmi, channel, user, message, self);
 });

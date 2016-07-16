@@ -29,8 +29,10 @@ describe('Chat Test', function() {
 });
 
 describe('Parsing Chat', function() {
+
   let channel = '#testChannelPleaseIgnore';
-  let user = 'TestUser'
+  let user = 'TestUser';
+
   describe('parseChat', function() {
     it('should do nothing when bot is the sender', function() {
       let message = '!addpoints 900 testUser';
@@ -56,7 +58,14 @@ describe('Parsing Chat', function() {
   });
 
   describe('checkForCommand', function() {
-    it('sends default commands to defaultCommands()');
+    it('sends default commands to defaultCommands()', function() {
+      let defCom = sinon.stub(chat.defaultCommands, 'howdy');
+      let message = ['!howdy'];
+      let check = chat.checkForCommand(tmiShort, channel, user, message);
+
+      defCom.restore();
+      sinon.assert.calledWith(defCom, tmiShort, channel, user, message);
+    });
     it('sends all other commands to checkDBFor()');
   });
 
