@@ -13,6 +13,7 @@ const expect = chai.expect;
 const chat = require('../lib/chat');
 const tmi = require('../lib/connect').client;
 const tmiShort = 'fake';
+const db = require('../lib/db');
 
 describe('Chat Test', function() {
   it('should return success', function() {
@@ -28,10 +29,10 @@ describe('Chat Test', function() {
   });
 });
 
-describe('Parsing Chat', function() {
+let channel = '#testChannelPleaseIgnore';
+let user = 'TestUser';
 
-  let channel = '#testChannelPleaseIgnore';
-  let user = 'TestUser';
+describe('Parsing Chat', function() {
 
   describe('parseChat', function() {
     it('should do nothing when bot is the sender', function() {
@@ -77,4 +78,49 @@ describe('Parsing Chat', function() {
     });
   });
 
+  describe('check database for commands', function() {
+    it('should check database to see if command exists', function() {
+      let checkDB = sinon.stub(db, 'getCommand');
+      let say = sinon.stub(tmi, 'say');
+      let message = ['testCommand'];
+
+      chat.checkDBFor(channel, user, message);
+
+      checkDB.restore();
+      say.restore();
+      sinon.assert.calledWith(checkDB, message);
+    });
+    it('should send correct command to tmi.say if it does exist', function() {
+      let checkDB = sinon.stub(db, 'getCommand', () => {
+        return 'This is what the command is.';
+      });
+      let say = sinon.stub(tmi, 'say');
+      let message = ['testCommand'];
+      let fetchedMessage = 'This is what the command is.';
+
+      chat.checkDBFor(channel, user, message);
+
+      checkDB.restore();
+      say.restore();
+      sinon.assert.calledWith(say, channel, fetchedMessage);
+    });
+    it('should return false if command does not exist in database', function() {
+      let checkDB = sinon.stub(db, 'getCommand', () => {
+        return false;
+      });
+      let say = sinon.stub(tmi, 'say');
+      let message = ['thisCommandDoesNotExist'];
+
+      let returned = chat.checkDBFor(channel, user, message);
+      checkDB.restore();
+      say.restore();
+      sinon.assert.notCalled(say);
+    });
+    it('should also search for old commands that start with a "!"');
+  });
+
+});
+
+describe('Database Tests', function() {
+  it('should exist');
 });
