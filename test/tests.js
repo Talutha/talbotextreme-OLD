@@ -47,7 +47,7 @@ describe('Parsing Chat', function() {
       expect(parsed).to.be.false;
     });
 
-    it('should send default commands to checkForCommand', function() {
+    it('should send valid commands to checkForCommand', function() {
       let check = sinon.stub(chat, 'checkForCommand');
       let message = '!points';
       let parsed = chat.parseChat(channel, user, message, false);
@@ -116,11 +116,41 @@ describe('Parsing Chat', function() {
       say.restore();
       sinon.assert.notCalled(say);
     });
-    it('should also search for old commands that start with a "!"');
+    it('should also search for old commands that start with a "!"', function() {
+      let checkDB = sinon.stub(db, 'getCommand', function(received) {
+        if (received[0] !== '!') return false;
+        return 'This was found as a legacy command!';
+      });
+      let say = sinon.stub(tmi, 'say');
+      let message = ['thisIsAnOldCommand'];
+      let fetchedMessage = 'This was found as a legacy command!';
+
+      chat.checkDBFor(channel, user, message);
+
+      checkDB.restore();
+      say.restore();
+      sinon.assert.calledWith(say, channel, fetchedMessage);
+    });
   });
 
 });
 
 describe('Database Tests', function() {
+  it('should exist');
+});
+
+describe('Points Module', function() {
+  it('should exist');
+});
+
+describe('Bankheist Module', function() {
+  it('should exist');
+});
+
+describe('Line Module', function() {
+  it('should exist');
+});
+
+describe('Raffle Module', function() {
   it('should exist');
 });
