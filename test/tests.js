@@ -136,7 +136,20 @@ describe('Parsing Chat', function() {
 });
 
 describe('Database Tests', function() {
-  it('should exist');
+  describe('getCommand', function() {
+    it('should retrieve a command from the database', function() {
+      let command = ['testCommand'];
+      let fetchedMessage = 'This was a test command!';
+      let userCommands = sinon.stub(db, 'userCommands', function() {
+        return 'This was a test command!';
+      });
+
+      let getCommand = db.getCommand(command);
+
+      userCommands.restore();
+      expect(getCommand).to.equal(fetchedMessage);
+    });
+  });
 });
 
 describe('Points Module', function() {
